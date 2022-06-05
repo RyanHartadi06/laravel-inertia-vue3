@@ -1,4 +1,8 @@
+<script setup>
+import Header from "../../Layouts/header.vue";
+</script>
 <template>
+    <Header></Header>
     <div class="mt-5">
         <!-- flash message -->
         <div
@@ -35,9 +39,25 @@
                             <td>{{ products.name_products }}</td>
                             <td>{{ products.price }}</td>
                             <td>
-                                <img :src="`${products.image}`" alt="" />
+                                <img
+                                    :src="`${products.image}`"
+                                    alt=""
+                                    width="120"
+                                />
                             </td>
-                            <td class="text-center"></td>
+                            <td>
+                                <Link
+                                    :href="`/category/${products.id}/edit`"
+                                    class="btn btn-primary btn-md shadow-sm me-2"
+                                >
+                                    Edit
+                                </Link>
+                                <button
+                                    class="btn btn-warning btn-md shadow-sm"
+                                >
+                                    Delete
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
