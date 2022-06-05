@@ -1,13 +1,13 @@
 <template>
     <div class="mt-5">
         <!-- flash message -->
-        <!-- <div
+        <div
             v-if="$page.props.flash.message"
             class="alert alert-success"
             role="alert"
         >
             {{ $page.props.flash.message }}
-        </div> -->
+        </div>
         <!-- flash message -->
         <div class="mb-3">
             <Link href="/products/create" class="btn btn-md btn-primary"
@@ -27,11 +27,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Kecap ABC</td>
-                            <td>12000</td>
-                            <td>img url</td>
+                        <tr
+                            v-for="(products, index) in products"
+                            :key="products.id"
+                        >
+                            <td>{{ index + 1 }}</td>
+                            <td>{{ products.name_products }}</td>
+                            <td>{{ products.price }}</td>
+                            <td>
+                                <img :src="`${products.image}`" alt="" />
+                            </td>
                             <td class="text-center"></td>
                         </tr>
                     </tbody>
@@ -49,6 +54,9 @@ export default {
     layout: LayoutApp,
     components: {
         Link,
+    },
+    props: {
+        products: Array, // <- nama props yang dibuat di controller saat parsing data
     },
 };
 </script>

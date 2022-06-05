@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -14,7 +18,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Product/index');
+        $data = Product::all();
+        return Inertia::render('Product/index', [
+            'products' => $data
+        ]);
     }
 
     /**
@@ -24,7 +31,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Product/create');
+        $category = Category::latest()->get();
+        return Inertia::render('Product/create', [
+            'category' => $category,
+        ]);
     }
 
     /**
@@ -35,7 +45,24 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate(
+            [
+                'image' => 'mimes:jpg,jpeg,png|max:2048'
+            ],
+        );
+        $filename = "";
+        $key =  Str::random(10);
+        if ($request->image <> "") {
+            $file = $request->image;
+            $filename = 'assets/product' . '/' . $key . '.' . $file->extension();
+            $file->move(public_path('assets/product'), $filename);
+        }
+        $data = $request->all();
+        $data['slug'] = Str::slug($request->name_products);
+        $data['image'] = $filename;
+        Product::create($data);
+        // echo json_encode($data);
+        return Redirect::route('products.index')->with('message', 'Data Berhasil Dihapus!');
     }
 
     /**

@@ -4,13 +4,14 @@
             <div class="card-body">
                 <h4>Tambah Produk</h4>
                 <hr />
-                <form>
+                <form @submit.prevent="submit">
                     <div class="mb-3">
                         <label class="form-label">Nama Produk</label>
                         <input
                             type="text"
                             class="form-control"
                             placeholder="Masukkan Nama Produk"
+                            v-model="form.name_products"
                         />
                     </div>
                     <div class="mb-3">
@@ -19,6 +20,7 @@
                             type="text"
                             class="form-control"
                             placeholder="Masukkan Harga"
+                            v-model="form.price"
                         />
                     </div>
                     <div class="mb-3">
@@ -26,11 +28,15 @@
                         <select
                             class="form-select"
                             aria-label="Default select example"
+                            v-model="form.category_id"
                         >
-                            <option selected>Open this select menu</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                            <option
+                                v-for="categories in category"
+                                :key="categories.id"
+                                :value="categories.id"
+                            >
+                                {{ categories.name }}
+                            </option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -39,16 +45,16 @@
                             type="file"
                             class="form-control"
                             placeholder="Masukkan Image"
+                            @change="previewImage"
+                            ref="photo"
+                            name="photo"
                         />
+                        <img v-if="url" :src="url" class="w-full mt-4 h-80" />
+                        <div v-if="errors.image" class="font-bold text-red-600">
+                            {{ errors.image }}
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Deskripsi</label>
-                        <textarea
-                            class="form-control"
-                            rows="5"
-                            placeholder="Masukkan Deskripsi"
-                        ></textarea>
-                    </div>
+
                     <div class="mb-3">
                         <button
                             type="submit"
@@ -71,7 +77,46 @@
 
 <script>
 import LayoutApp from "../../Layouts/navbar.vue";
+import { reactive } from "vue";
+import { Inertia } from "@inertiajs/inertia";
+import { useForm } from "@inertiajs/inertia-vue3";
 export default {
     layout: LayoutApp,
+    props: {
+        category: Array,
+        errors: Object,
+    },
+    data() {
+        return {
+            url: null,
+        };
+    },
+    setup() {
+        const form = useForm({
+            image: null,
+            name_products: "",
+            price: "",
+            category_id: "",
+        });
+        return { form };
+    },
+    methods: {
+        previewImage(e) {
+            const file = e.target.files[0];
+            this.url = URL.createObjectURL(file);
+        },
+        submit() {
+            this.form.image = this.$refs.photo.files[0];
+
+            const data = {
+                image: this.form.image,
+                name_products: this.form.name_products,
+                price: this.form.price,
+                category_id: this.form.category_id,
+            };
+            console.log(data);
+            Inertia.post("/products/", data);
+        },
+    },
 };
 </script>
